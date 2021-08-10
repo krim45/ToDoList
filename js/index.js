@@ -1,18 +1,18 @@
 const today = new Date();
 const todayDay = today.getDate();
+const todayYear = today.getFullYear();
 const todayMonth = today.getMonth();
 
 let year = new Date().getFullYear();
 let month = new Date().getMonth();
+console.log(month);
 
-let prevYear = year;
-let prevMonth = month;
-let nextYear = year;
-let nextMonth = month + 2;
+const nav = document.querySelector('.nav');
+const left = document.querySelector('.left');
+const right = document.querySelector('.right');
 
-const prevMonthHtml = document.querySelector('.prev-month');
-const yearMonthHtml = document.querySelector('.year-month');
-const nextMonthHtml = document.querySelector('.next-month');
+const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 
 
 // --------------------- Calendar ----------------------------------
@@ -36,25 +36,28 @@ class Calendar {
     for (let i = 0; i < 6; i++) {
       for (let j = 0; j < 7; j++) {
         if (i === 0 && j < this.firstDay() && j === 0) {
-          this.dates += `<div class="date prev hoilday">&nbsp;${this.prevDate++}</div>`;
+          this.dates += `<div class="date-box prev hoilday"><div class="date">&nbsp;${this.prevDate++}</div></div>`;
         }
         else if (i === 0 && j < this.firstDay()) {
-          this.dates += `<div class="date prev">&nbsp;${this.prevDate++}</div>`;
+          this.dates += `<div class="date-box prev"><div class="date">&nbsp;${this.prevDate++}</div></div>`;
         }
-        else if (this.dateCnt == todayDay && month == todayMonth) {
-          this.dates += `<div class="date this today">&nbsp;${this.dateCnt++}</div>`;
+        else if (this.dateCnt == todayDay && month == todayMonth && j === 0 && year === todayYear) {
+          this.dates += `<div class="date-box this hoilday today"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
+        }
+        else if (this.dateCnt == todayDay && month == todayMonth && year === todayYear) {
+          this.dates += `<div class="date-box this today"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
         }
         else if (this.dateCnt <= this.lastDate() && j === 0) {
-          this.dates += `<div class="date this hoilday">&nbsp;${this.dateCnt++}</div>`;
+          this.dates += `<div class="date-box this hoilday"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
         }
         else if (this.dateCnt <= this.lastDate()) {
-          this.dates += `<div class="date this">&nbsp;${this.dateCnt++}</div>`;
+          this.dates += `<div class="date-box this"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
         }
         else if (this.dateCnt > this.lastDate() && j === 0) {
-          this.dates += `<div class="date next hoilday">&nbsp;${this.nextDate++}</div>`;
+          this.dates += `<div class="date-box next hoilday"><div class="date">&nbsp;${this.nextDate++}</div></div>`;
         }
         else if (this.dateCnt > this.lastDate()) {
-          this.dates += `<div class="date next">&nbsp;${this.nextDate++}</div>`;
+          this.dates += `<div class="date-box next"><div class="date">&nbsp;${this.nextDate++}</div></div>`;
         }
       }
     }
@@ -74,7 +77,6 @@ class Calendar {
     const table = document.querySelector('.dates');
     table.innerHTML = "";
     table.innerHTML += this.makeDates();
-
   }
 }
 
@@ -84,82 +86,83 @@ calendar.showTable();
 
 
 // ---------------------- year - month - UI ----------------------------------
-
-function makeYearMonth() {
-  removeHtml();
-  prevYear = year;
-  prevMonth = month;
-  nextYear = year;
-  nextMonth = month + 2;
-
-  if (month === 0) {
-    prevMonth = 12 + prevMonth;
-    prevYear -= 1;
+function monthCheck(m) {
+  if (m > 0) {
+    m %= 12;
+  } else if (m < 0) {
+    m = 12 - Math.abs(m);
+  } else {
+    m = 0;
   }
-  else if (month < 0) {
-    year -= 1;
-    month = 12 + month;
-    prevMonth = 12 + prevMonth;
-    prevYear = year;
-  }
-  else if (month === 11) {
-    nextYear += 1;
-    nextMonth -= 12;
-  }
-  else if (month > 11) {
-    year += 1;
-    month -= 12;
-    nextMonth -= 12;
-    nextYear = year;
-  }
-
-  prevMonthHtml.innerHTML += `<div class="year">${prevYear}</div>`;
-  prevMonthHtml.innerHTML += `<div class="month">${prevMonth}</div>`;
-
-  yearMonthHtml.innerHTML += `<div class="year">${year}</div>`;
-  yearMonthHtml.innerHTML += `<div class="month">${month + 1}</div>`;
-
-  nextMonthHtml.innerHTML += `<div class="year">${nextYear}</div>`;
-  nextMonthHtml.innerHTML += `<div class="month">${nextMonth}</div>`;
+  return m
 }
 
-function removeHtml() {
-  prevMonthHtml.innerHTML = '';
-  yearMonthHtml.innerHTML = '';
-  nextMonthHtml.innerHTML = '';
+function makeYearMonth() {
+  nav.children[0].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month - 1)]}</div>`;
+  nav.children[1].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month)]}</div>`;
+  nav.children[2].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month + 1)]}</div>`;
 }
 
 function movePrevMonth() {
-  month -= 1;
-  console.log('prev');
-  makeYearMonth();
-  calendar.showTable();
+  console.log(month);
+  const div = document.createElement('div');
+  div.classList.add('year-month');
+  nav.prepend(div);
+  div.setAttribute('style', 'position: absolute; width: 33%; right: 100%;');
+  nav.setAttribute('style', 'transition: 0.4s; transform: translateX(33%);');
+
+  month = monthCheck(month - 1);
+  if (monthCheck(month) === 0) year -= 1;
+
+  nav.children[0].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month - 1)]}</div>`;
+  console.log(monthCheck(month - 1));
+  setTimeout(() => {
+    calendar.showTable();
+    div.removeAttribute('style');
+    nav.removeAttribute('style');
+    nav.children[3].remove();
+  }, 400);
 }
 
 function moveNextMonth() {
-  month += 1;
-  console.log('next');
-  makeYearMonth();
-  calendar.showTable();
+  const div = document.createElement('div');
+  div.classList.add('year-month');
+  nav.append(div);
+
+  div.setAttribute('style', 'position: absolute; width: 33%; left: 100%;');
+  nav.setAttribute('style', 'transition: 0.4s; transform: translateX(-33%);');
+
+  month = monthCheck(month + 1);
+  if (monthCheck(month) === 11) year += 1;
+
+  nav.children[3].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month + 1)]}</div>`;
+
+  setTimeout(() => {
+    calendar.showTable();
+    div.removeAttribute('style');
+    nav.removeAttribute('style');
+    nav.children[0].remove();
+  }, 400);
 }
 
-
-prevMonthHtml.addEventListener('click', movePrevMonth);
-nextMonthHtml.addEventListener('click', moveNextMonth);
-
+left.addEventListener('click', movePrevMonth);
+right.addEventListener('click', moveNextMonth);
 
 
 // --------------- today-------------------------
 
 const goToday = document.querySelector('.today-box');
 
-goToday.addEventListener('click', moveToday);
-
-
 function moveToday() {
   year = new Date().getFullYear();
   month = new Date().getMonth();
+
+  nav.children[0].innerHTML = '';
+  nav.children[1].innerHTML = '';
+  nav.children[2].innerHTML = '';
+
   makeYearMonth();
   calendar.showTable();
 }
 
+goToday.addEventListener('click', moveToday);
