@@ -5,14 +5,12 @@ const todayMonth = today.getMonth();
 
 let year = new Date().getFullYear();
 let month = new Date().getMonth();
-console.log(month);
 
 const nav = document.querySelector('.nav');
 const left = document.querySelector('.left');
 const right = document.querySelector('.right');
 
 const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
 
 
 // --------------------- Calendar ----------------------------------
@@ -36,28 +34,28 @@ class Calendar {
     for (let i = 0; i < 6; i++) {
       for (let j = 0; j < 7; j++) {
         if (i === 0 && j < this.firstDay() && j === 0) {
-          this.dates += `<div class="date-box prev hoilday"><div class="date">&nbsp;${this.prevDate++}</div></div>`;
+          this.dates += `<div class="date-box prev hoilday"><div class="date">${this.prevDate++}</div></div>`;
         }
         else if (i === 0 && j < this.firstDay()) {
-          this.dates += `<div class="date-box prev"><div class="date">&nbsp;${this.prevDate++}</div></div>`;
+          this.dates += `<div class="date-box prev"><div class="date">${this.prevDate++}</div></div>`;
         }
         else if (this.dateCnt == todayDay && month == todayMonth && j === 0 && year === todayYear) {
-          this.dates += `<div class="date-box this hoilday today"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
+          this.dates += `<div class="date-box this hoilday today"><div class="date">${this.dateCnt++}</div></div>`;
         }
         else if (this.dateCnt == todayDay && month == todayMonth && year === todayYear) {
-          this.dates += `<div class="date-box this today"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
+          this.dates += `<div class="date-box this today"><div class="date">${this.dateCnt++}</div></div>`;
         }
         else if (this.dateCnt <= this.lastDate() && j === 0) {
-          this.dates += `<div class="date-box this hoilday"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
+          this.dates += `<div class="date-box this hoilday"><div class="date">${this.dateCnt++}</div></div>`;
         }
         else if (this.dateCnt <= this.lastDate()) {
-          this.dates += `<div class="date-box this"><div class="date">&nbsp;${this.dateCnt++}</div></div>`;
+          this.dates += `<div class="date-box this"><div class="date">${this.dateCnt++}</div></div>`;
         }
         else if (this.dateCnt > this.lastDate() && j === 0) {
-          this.dates += `<div class="date-box next hoilday"><div class="date">&nbsp;${this.nextDate++}</div></div>`;
+          this.dates += `<div class="date-box next hoilday"><div class="date">${this.nextDate++}</div></div>`;
         }
         else if (this.dateCnt > this.lastDate()) {
-          this.dates += `<div class="date-box next"><div class="date">&nbsp;${this.nextDate++}</div></div>`;
+          this.dates += `<div class="date-box next"><div class="date">${this.nextDate++}</div></div>`;
         }
       }
     }
@@ -86,26 +84,29 @@ calendar.showTable();
 
 
 // ---------------------- year - month - UI ----------------------------------
+
 function monthCheck(m) {
   if (m > 0) {
     m %= 12;
-  } else if (m < 0) {
+  }
+  else if (m < 0) {
     m = 12 - Math.abs(m);
-  } else {
+  }
+  else {
     m = 0;
   }
   return m
 }
 
 function makeYearMonth() {
-  nav.children[0].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month - 1)]}</div>`;
-  nav.children[1].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month)]}</div>`;
-  nav.children[2].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month + 1)]}</div>`;
+  nav.children[0].innerHTML = `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month - 1)]}</div>`;
+  nav.children[1].innerHTML = `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month)]}</div>`;
+  nav.children[2].innerHTML = `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month + 1)]}</div>`;
 }
 
 function movePrevMonth() {
-  console.log(month);
   const div = document.createElement('div');
+
   div.classList.add('year-month');
   nav.prepend(div);
   div.setAttribute('style', 'position: absolute; width: 33%; right: 100%;');
@@ -114,8 +115,8 @@ function movePrevMonth() {
   month = monthCheck(month - 1);
   if (monthCheck(month) === 0) year -= 1;
 
-  nav.children[0].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month - 1)]}</div>`;
-  console.log(monthCheck(month - 1));
+  div.innerHTML = `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month - 1)]}</div>`;
+
   setTimeout(() => {
     calendar.showTable();
     div.removeAttribute('style');
@@ -126,27 +127,33 @@ function movePrevMonth() {
 
 function moveNextMonth() {
   const div = document.createElement('div');
-  div.classList.add('year-month');
-  nav.append(div);
 
+  div.classList.add('year-month');
   div.setAttribute('style', 'position: absolute; width: 33%; left: 100%;');
+  nav.append(div);
   nav.setAttribute('style', 'transition: 0.4s; transform: translateX(-33%);');
 
   month = monthCheck(month + 1);
   if (monthCheck(month) === 11) year += 1;
 
-  nav.children[3].innerHTML += `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month + 1)]}</div>`;
+  div.innerHTML = `<div class="year">${year}</div><div class="month">${monthName[monthCheck(month + 1)]}</div>`;
 
   setTimeout(() => {
+    nav.children[0].remove();
     calendar.showTable();
     div.removeAttribute('style');
     nav.removeAttribute('style');
-    nav.children[0].remove();
   }, 400);
 }
 
-left.addEventListener('click', movePrevMonth);
-right.addEventListener('click', moveNextMonth);
+left.addEventListener('click', function (event) {
+  event.stopPropagation();
+  movePrevMonth();
+});
+right.addEventListener('click', function (event) {
+  event.stopPropagation();
+  moveNextMonth();
+});
 
 
 // --------------- today-------------------------
