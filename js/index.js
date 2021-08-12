@@ -173,3 +173,34 @@ function moveToday() {
 }
 
 goToday.addEventListener('click', moveToday);
+
+
+// --------------- input delete - UI ------------------------------------
+
+const input = document.querySelector('.to-do');
+const addBtn = document.querySelector('.add');
+const lists = document.querySelector('.lists');
+let i = 0;
+
+function addTodo() {
+  if (input.value) {
+    const div = document.createElement('div');
+
+    div.setAttribute('class', `list${i}`);
+    div.innerHTML = input.value + `<button class="deleteX${i}">x</button>`;
+    lists.append(div);
+
+    const deleteX = document.querySelector(`.deleteX${i}`);
+
+    deleteX.addEventListener('click', function (e) {
+      div.outerHTML = '';
+      e.stopPropagation();
+    })
+
+    i++;
+  }
+
+  input.value = '';
+}
+
+addBtn.addEventListener('click', addTodo);
